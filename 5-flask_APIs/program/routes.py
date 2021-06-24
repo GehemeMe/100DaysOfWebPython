@@ -1,5 +1,5 @@
 from program import app
-from flask import render_template
+from flask import render_template, request
 from datetime import datetime
 import requests
 
@@ -14,6 +14,8 @@ def index():
 def p100Days():
     return render_template('100Days.html')
 
+
+
 @app.route('/chuck')
 def chuck():
     joke = get_chuck_joke()
@@ -24,3 +26,23 @@ def get_chuck_joke():
     data = r.json()
     return data['value']
 
+
+
+@app.route('/pokemon', methods=['GET', 'POST'])
+def pokemon():
+    pokemon = []
+    if request.method == 'POST' and 'pokecolor' in request.form:
+        color = request.form.get('pokecolor')
+        pokemon = get_poke_colors(color)
+    return render_template('pokemon.html', pokemon=pokemon)
+
+
+def get_poke_colors(color):
+    r = requests.get('https://pokeapi.co/api/v2/pokemon-color/' + color.lower())
+    pokedata = r.json()
+    pokemon = []
+    
+    for i in pokedata['pokemon_species']:
+        pokemon.append(i['name'])
+        
+    return pokemon

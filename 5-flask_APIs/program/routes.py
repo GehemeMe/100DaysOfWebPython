@@ -31,10 +31,14 @@ def get_chuck_joke():
 @app.route('/pokemon', methods=['GET', 'POST'])
 def pokemon():
     pokemon = []
+    error = []
     if request.method == 'POST' and 'pokecolor' in request.form:
         color = request.form.get('pokecolor')
-        pokemon = get_poke_colors(color)
-    return render_template('pokemon.html', pokemon=pokemon)
+        if possible_colors(color):
+            pokemon = get_poke_colors(color)
+        else:
+            error.append('Color invalid, please correct it.')
+    return render_template('pokemon.html', pokemon=pokemon, error=error)
 
 
 def get_poke_colors(color):
@@ -46,3 +50,10 @@ def get_poke_colors(color):
         pokemon.append(i['name'])
         
     return pokemon
+
+def possible_colors(color):
+    r = requests.get('https://pokeapi.co/api/v2/pokemon-color')
+    resp = r.json()
+    colors = [i.get('name') for i in resp['results']]
+    return color in colors
+

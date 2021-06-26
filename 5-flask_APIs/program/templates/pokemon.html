@@ -20,6 +20,11 @@
 <br>
 
 <div>
+    {% if error %}
+        <p style="background-color: red;">
+            Invalid color.
+        </p>
+    {% endif %}
     {% if pokemon %}
         <table>
             <tr>
